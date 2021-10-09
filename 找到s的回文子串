@@ -1,0 +1,56 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+//中心扩散的基础上进行优化
+inline int expend_i(const string &t,int i,int len){
+	while(i+len<t.size()&&i-len>=0&&t[i+len]==t[i-len]){
+	len++;}
+     return len-1;
+}
+//假设只有奇数对称
+//利用动态思想，字符串从s[0]开始遍历，假设遍历到i时候,
+//假设 s[i]字符回文的长度等于arm[i]
+//此时已经前方遍历到最右边的字符 index为 pos+arm[pos]  他的中心位置是pos
+//i关于pos对称的位置为2*pos-i  在pos±arm[pos]区间内,arm[i]=arm[2*pos-i]
+//当2*pos-i-arm[2*pos-i]在pos-arm[pos]左边时，arm[i]的长度就等于pos+arm[pos]-i
+//当2*pos-i-arm[2*pos-i]在（pos-arm[pos]，pos）时，arm[i]的长度就等 arm[2*pos-i]
+//当2*pos-i-arm[2*pos-i]==pos-arm[pos]时，arm[i]的长度就是arm±arm[2*pos-i]基础上，向两边继续扩散。
+//expend_i函数完美解决了以上问题
+//当出现偶数对称的时候 例如abba  引入#变成#a#b#b#a#,转化为奇数对称，并且此方法也可以处理奇数对称，最后只需要去掉#即可
+string longestPalindrome(string s) {
+	int i=0,pos=0,max=0;
+	string t;
+	for(i=0;i<s.size();i++){
+		t+='#',t+=s[i];
+	} 
+	t+='#'; 
+  	vector<int> arm;
+ 	arm.reserve(t.size());
+ 	arm[0]=0;
+  //form here
+  
+  
+     for(i=1;i<t.size();i++){
+     	if(pos+arm[pos]<=i){
+     		pos=i;
+			arm[i]=expend_i(t,i,1);
+          	max=arm[max]>arm[i]?max:i;
+  		}
+    		else{
+     		if((2*pos-i)-arm[2*pos-i]<pos-arm[pos]) arm[i]=expend_i(t,i,pos+arm[pos]-i+1);
+  	 		else arm[i]=expend_i(t,i,arm[2*pos-i]+1);
+               if(arm[i]+i>=arm[pos]+pos) pos=i;
+               max=arm[max]>arm[i]?max:i;
+  		}
+	}
+  
+  
+  //to here
+ 	s=t.substr(max-arm[max],2*arm[max]+1);
+  	t.clear();
+   	for(i=0;i<s.size();i++){
+ 		if(s[i]=='#') continue;
+ 		else t+=s[i];}
+    	return t;
+}
