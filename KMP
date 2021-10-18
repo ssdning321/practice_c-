@@ -1,0 +1,16 @@
+
+    int strStr(string haystack, string needle) {string &s=haystack,&p=needle;
+    if(p=="") return 0;
+	int sn=s.size(),pn=p.size(),i=0,j=0;
+	vector<int> next={-1};
+	next.reserve(pn);
+	for(int n=0,k=-1;n<pn-1; ){
+	//while(n<p.size()-1){
+		if(k==-1||p[k]==p[n]) next[++n]=++k;
+		else k=next[k];
+	}
+	while((i<sn)&&j<pn){
+		if(j==-1||s[i]==p[j]) i++,j++;
+		else j=next[j];
+	}
+	return j>=pn?i-pn:-1;}	
