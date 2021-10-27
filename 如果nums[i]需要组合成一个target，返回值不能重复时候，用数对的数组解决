@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int target;
+    vector<int> nums;
+    vector<vector<int>> res;
+    vector<pair<int,int>> fred;
+    void depth_first_search(int num,int n){
+        for(int i=n;i<fred.size();i++){     
+            if(num+fred[i].first<target) {
+                nums.push_back(fred[i].first);//223
+                if(fred[i].second!=1){
+                    fred[i].second--;
+                    depth_first_search(num+fred[i].first,i);
+                    nums.pop_back();
+                    fred[i].second++;
+                }
+                else{depth_first_search(num+fred[i].first,i+1);
+                nums.pop_back();//加完就删除
+                }
+            }
+            else if(num+fred[i].first>target) break;
+            else {
+                nums.push_back(fred[i].first);
+                res.push_back(nums);
+                nums.pop_back();//22
+                break;
+            }
+        }
+        return;
+    }
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {//2,3,6,7
+        sort(candidates.begin(),candidates.end());    
+        this->target=target;
+        for(int n=0;n<candidates.size();n++){
+            if(n&&candidates[n]==candidates[n-1]){
+                (fred.end()-1)->second++;
+            }
+            else fred.push_back(pair<int,int>(candidates[n],1));
+        }
+        depth_first_search(0,0);
+        return res;
+    }
+};
