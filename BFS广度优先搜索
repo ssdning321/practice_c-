@@ -1,0 +1,88 @@
+
+BFS广度优先遍历
+例如:
+给定二叉树: [3,9,20,null,null,15,7],
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+返回其层次遍历结果：
+
+[
+  [3],
+  [9,20],
+  [15,7]
+]
+ 
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+解题思路
+注意：下面分析代码的时候 一律将double 看作 int double 是为了解决溢出问题
+把二叉树转化为数组思想 第一个节点root 是索引0
+第i个节点的 左节点索引 2*i+1 右节点 2-i+2 数对的前一个存储当前节点的索引
+基本的BFS思想 创建一个数对队列 数对的第一个int 是他的索引，第二个是他的地址
+
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        if(root){
+            double i=1;//用于2的i次方
+            double j=-1;//用于返回ret
+                //第一个保存索引 第二个保存地址
+            queue<pair<double,TreeNode*>> store; 
+            store.push({0,root});//先添加根节点
+            vector<vector<int>> ret;//返回的组
+            while(store.size()){
+                pair<double,TreeNode*> now=store.front();
+                store.pop();
+                if(now.second->left) store.push(pair<double,TreeNode*>(2*now.first+1,now.second->left));
+                if(now.second->right) store.push(pair<double,TreeNode*>(2*now.first+2,now.second->right));
+                //以上为BFS 
+                //以下为对index 操作
+                //如果他的索引 now.first  小于 2的i次方 -1 说明这个节点和上一个节点属于同一层 添加她在最后一个数组组中 
+                if(now.first+1-i<0){
+                    ret[j].push_back(now.second->val);
+                } 
+                //如果大于 说明当前的节点 是上一个节点的 下一层 则创建新数组添加到返回
+                else{
+                    i*=2;
+                    j++;
+                    ret.push_back({});
+                    ret[j].push_back(now.second->val);
+                }
+            }
+            return ret;
+        }
+        else return {};
+    }
+};
+
+
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        queue<TreeNode*> q;
+        vector<vector<int> > ans;
+        if(root==NULL){
+            return ans;
+        }
+        q.push(root);
+        while(!q.empty()){
+            vector<int> temp;
+            for(int i=q.size();i>0;i--){//非常妙的方法！！！！！！！！！！！！！！！！
+                TreeNode* node = q.front();
+                q.pop();
+                temp.push_back(node->val);
+                if(node->left!=NULL) q.push(node->left);
+                if(node->right!=NULL) q.push(node->right);
+            }
+            ans.push_back(temp);
+        }
+
+        return ans;
+    }
+};
