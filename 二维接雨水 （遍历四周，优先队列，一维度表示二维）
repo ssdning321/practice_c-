@@ -1,0 +1,72 @@
+给你一个 m x n 的矩阵，其中的值均为非负整数，代表二维高度图每个单元的高度，请计算图中形状最多能接多少体积的雨水。
+
+ 
+
+示例 1:
+
+
+
+输入: heightMap = [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]
+输出: 4
+解释: 下雨后，雨水将会被上图蓝色的方块中。总的接雨水量为1+2+1=4。
+示例 2:
+
+
+
+输入: heightMap = [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]]
+输出: 10
+
+代码
+解题思路
+创建一个小顶堆，首先把四周的数据输入
+然后选取最小的一个 即优先队列的第一位元素，
+对最小的元素四周进行遍历 并且填充到队列中
+如果比他大，则直接填入到队列中，否则把这个数据进行填充 至和他一样大并填入优先队列中
+直到队列没有任何元素
+
+代码
+
+class Solution {
+public:
+    int trapRainWater(vector<vector<int>>& heightMap) {
+        int res=0;//返回值
+        using pa=pair<int,int>;//可用于非模板
+        int m=heightMap[0].size(),n=heightMap.size();//横排和竖排
+
+        priority_queue<pa,vector<pa>,greater<pa>> que;//创建优先队列 greater表示小顶堆
+        vector<vector<bool>> sto(n,vector<bool>(m,1));//创建一个数组 记录数据是否被遍历
+        //四个顶点没有任何用处，先设置为0
+        sto[0][0]=sto[0][m-1]=sto[n-1][0]=sto[n-1][m-1]=0;
+        //第一排和最后一排填入队列中
+        for(int i=1;i<m-1;i++){
+            sto[0][i]=0,sto[n-1][i]=0;
+            que.push({heightMap[0][i],i});
+            que.push({heightMap[n-1][i],m*(n-1)+i});
+        }
+        //第一列和最后一列
+        for(int i=1;i<n-1;i++){
+            sto[i][0]=0,sto[i][m-1]=0;
+            que.push({heightMap[i][0],i*m});
+            que.push({heightMap[i][m-1],i*m+m-1});
+        }
+        //此方法遍历数据的四周非常巧妙！！！！！ 还用到了1维数据表示2维数据
+        array<int,5> dirs={-1,0,1,0,-1};
+        //循环直到队列空
+        while(que.size()){
+            pa tem=que.top();
+            que.pop();
+            for(int i=0;i<4;i++){
+                int x=tem.second/m+dirs[i];
+                int y=tem.second%m+dirs[i+1];
+                //遍历条件：在数组范围之内并且没有被遍历过
+                if(x>0&&x<n-1&&y>0&&y<m-1 && sto[x][y]){ 
+                    sto[x][y]=0;
+                    //如果小于 队列 最小的 填充她并且填入队列中
+                    if(tem.first>heightMap[x][y]){
+                        res+=tem.first-heightMap[x][y];
+                        que.push({tem.first,x*m+y});}
+                    //否则直接填入
+                    else que.push({heightMap[x][y],x*m+y});
+        }}}
+        return res;
+}};
