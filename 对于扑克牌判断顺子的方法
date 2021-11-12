@@ -1,0 +1,56 @@
+排序去重
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+    sort(nums.begin(),nums.end());
+    int k=0;
+    for(int i=0;i<4;i++){
+        if(nums[i]==0) k++;
+        else if(nums[i]==nums[i+1]) return false;
+    }
+    return nums[4]-nums[k]<5;
+    }
+};
+
+
+语言： cpp
+
+
+集合去重 
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+        unordered_set<int> hash;
+        auto end=hash.end();
+        int max=0,min=INT_MAX,k=0;
+        for(int n:nums){
+            if(n){
+                if(end!=hash.find(n)) return false;
+                else hash.insert(n);
+                max=max>n?max:n;
+                min=min>n?n:min;
+            }
+            else k++;
+        }
+        return max-min-k<5;
+    }
+};
+
+位运算去重
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+        int hash=0;
+        short max=0,min=13,k=0;
+        for(short n:nums){
+            if(n){
+                if(hash>>n&1) return false;
+                else hash+=1<<n;
+                max=max>n?max:n;
+                min=min>n?n:min;
+            }
+            else k++;
+        }
+        return max-min-k<5;
+    }
+};
