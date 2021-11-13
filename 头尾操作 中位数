@@ -1,0 +1,63 @@
+class CQueue {
+    stack<int> stack_main;
+    stack<int> stack_temp;
+public:
+    CQueue() {}
+    
+    void appendTail(int value) {
+        if(stack_main.empty()){
+            while(!stack_temp.empty()){
+                stack_main.push(stack_temp.top());
+                stack_temp.pop();
+            }
+        }
+        stack_main.push(value);
+        return;
+    }
+    
+    int deleteHead() {
+        if(stack_main.empty()&&stack_temp.empty()) return -1;
+        while(!stack_main.empty()){
+            stack_temp.push(stack_main.top());
+            stack_main.pop();
+        }
+        int ret=stack_temp.top();
+        stack_temp.pop();
+        return ret;
+    }
+};
+
+
+
+
+
+
+class MedianFinder {
+public:
+    priority_queue<int> quea;
+    priority_queue<int,vector<int>,greater<int>> queb;
+    bool x;
+    /** initialize your data structure here. */
+    MedianFinder() {
+    }
+    
+    void addNum(int num) {
+        quea.push(num);
+    }
+    
+    double findMedian() {
+        int x=quea.size()-queb.size();
+        while(x&&x+1){
+            int temp=quea.top();
+            quea.pop();
+            queb.push(temp);
+            x=quea.size()-queb.size();
+        }
+        if(x){
+            quea.push(queb.top());
+            queb.pop();
+            return quea.top();
+        }
+        else return ((double)quea.top()+(double)queb.top())/2;
+    }
+};
