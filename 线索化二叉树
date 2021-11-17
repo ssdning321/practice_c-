@@ -1,0 +1,31 @@
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
+
+
+
+class Solution {
+    Node *pre=nullptr,*now=nullptr;
+public:
+    void dfs(Node* root){
+        if(root){
+            dfs(root->left);
+
+            now=root;
+            pre->right=now;
+            now->left=pre;
+            pre=now;
+
+            dfs(root->right);
+        }
+    }
+    Node* treeToDoublyList(Node* root) {
+        if(!root) return root;
+        Node* head=new Node();
+        pre=head;
+        dfs(root);
+
+        now=head->right;
+        pre->right=now;
+        now->left=pre;
+        
+        return head->right;}
+};
