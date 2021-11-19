@@ -1,0 +1,42 @@
+知识
+对于某一位；
+异或运算：x ^ 0 = x​ ， x ^ 1 = ~x
+与运算：x & 0 = 0 ， x & 1 = x
+或运算  x|1 = 1 ,   x | 0 = x
+
+x y都是状态位置
+00 01 10 三种
+
+对于任意一个数出现三次
+11  1011
+11  1011
+11  1011
+13  1101
+%3  4134 
+    1101 =5
+
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int x=0,y=0;
+        for(int n:nums){
+            x=x^n&~y;
+            y=y^n&~x;
+        }
+        return x;
+    }
+};
+由此可推导出4次甚至更多
+4次代码
+状态为 00 01 10 11
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int x=0,y=0;
+        for(int n:nums){
+            x=x^n;
+            y=y^(n&~x);
+        }
+        return x;
+    }
+};
