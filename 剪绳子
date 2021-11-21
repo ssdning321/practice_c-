@@ -1,0 +1,26 @@
+y=x^(n/x);
+取对数 ln y=(n/x)ln x;
+求导 y'/y=n(1/x^2)(ln x -1)
+带入y y'=n(1/x^2)(x^(n/x))(1-ln x)
+由于x和n 恒大于0 故 n*(1/x^2)(x^(n/x)) 恒大于0
+此时 1-ln x 在（0，e）大于0，在（e，∞）小于0
+此时x=e是y的极大值点
+e=2.71
+x只能取整数 故x首先应该取3，其次取2；
+在 能取3 的情况下都要取3
+若乘以3 最后剩下2 则直接2 例如 11=332
+若最后剩下1 则加入一个3 分解成22 例如 13=33322 比 3333*1更大
+class Solution{
+    public:
+        int cuttingRope(int n) {
+            if(n<4) return n-1;
+            else{
+                switch(n%3){
+                    case 0:return pow(3,n/3);
+                    case 1:return pow(3,n/3-1)*4;
+                    case 2:return pow(3,n/3)*2;
+                }
+            }
+            return 0;
+        }
+};
