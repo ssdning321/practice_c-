@@ -1,0 +1,12 @@
+这个本质是一个动态规划
+思路：从 n 个数中 删除第m个
+取决于在上一次 n-1个 删除后 首个位置之后的 第m个
+取模 防止重复遍历任意圈；
+class Solution {
+public:
+    int lastRemaining(int n, int m) {
+        int ans=0;
+        for(int i=2;i<=n;i++) ans=(ans+m)%i;
+        return ans;
+    }
+};
