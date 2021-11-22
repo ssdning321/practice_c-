@@ -1,0 +1,44 @@
+
+
+输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如，序列 {1,2,3,4,5} 是某栈的压栈序列，序列 {4,5,3,2,1} 是该压栈序列对应的一个弹出序列，但 {4,3,5,1,2} 就不可能是该压栈序列的弹出序列。
+
+
+思路
+把pushed数组 按照顺序压入栈中；left++依次填入；一边填入一边配对；
+
+循环体中操作
+1.若不和popped[right]对应的值相等，则继续压入栈
+stack.push(pushed[++left])；
+2.若相等则 栈顶删除这个元素，重新配对popped数组的++right和top
+stack.pop(); popped[++right]=?stack.top();
+
+结束条件 1.
+若到遍历完pushed数组，即（left=n） 还无法配对当前popped[right] （right<n）,
+此时按照循环条件：需要pushed继续压入时，但是pushed数组没有数据了，返回false；
+
+结束条件2.
+若俩个指针都到最后一个元素(left=n&right=n)并且成功配对，返回true
+
+代码
+
+class Solution {
+public:
+    bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
+        stack<int> help;
+        int n=pushed.size();
+        int left=0,right=0;
+        while(right<n){
+            //如果栈是空的，直接填入元素
+            //若栈顶和对应匹配的不等，继续填入；
+            if(help.empty()||help.top()!=popped[right]){
+                if(left>=n) return false;//若需要填入但是没元素了 返回false
+                help.push(pushed[left++]);/等效于先用后加
+            }
+            else{
+                help.pop();
+                right++;
+            }
+        }
+        return true;
+    }
+};
