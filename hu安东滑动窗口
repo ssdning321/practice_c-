@@ -1,0 +1,42 @@
+任意插入或者删除操作 和 求最大值 三个操作必须满足O(1)
+求解策略是 创建一个双端队列
+
+对于插入
+把队列中小于这个值的全部删掉，然后尾插
+对于队列的先进先出操作，如果插入了一个比较大的值。在他前面比他小的值全部都
+大小排名失效，因为除非全部删除，否则他一定在前面小的删除之后删除。
+小于他的一定比他先出去 无论出去多少个都不影响他的降序排名；
+当然，对于最大值出去取，当然就是他的后面最大的下一个顶替啦。
+对于删除
+如果删除的不是最大值，不用操作，因为插入的性质
+如果是最大值，则删掉最大值，然后让次大值最为队列头
+对于求最大
+取双端队列头
+下列代码push_d就是对双端却列的插入操作
+还考虑到nums数组在滑动窗口遍历之后失去用处了
+所以为了节约空间，把他们利用起来当作返回值
+
+代码
+
+class Solution {
+    deque<int> d;
+public:
+    void push_d(const vector<int> &nums,int i){
+        while(!d.empty()&&nums[i]>d.back()) d.pop_back();
+        d.push_back(nums[i]);
+    }
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        int n=nums.size();
+        if(n==0) return {};
+        for(int i=0;i<k;i++) push_d(nums,i);
+        int pre=nums[0];
+        nums[0]=d.front();
+        for(int i=k;i<n;i++){
+            if(pre==d.front()) d.pop_front();
+            push_d(nums,i);
+            pre=nums[i-k+1];
+            nums[i-k+1]=d.front();
+        }
+        return vector<int>(nums.begin(),nums.end()-k+1);
+    }
+};
