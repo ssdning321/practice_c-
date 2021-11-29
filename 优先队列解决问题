@@ -1,0 +1,65 @@
+运用优先队列解决问题
+
+合并k个链表
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        ListNode *res=new ListNode(0),*tail=res;
+
+        priority_queue<ListNode*,vector<ListNode*>,
+        function<bool(const ListNode *a,const ListNode *b)>> 
+        que([](const ListNode *a,const ListNode *b){
+            return a->val>b->val;
+        });
+
+        for(auto i:lists) if(i) que.push(i);
+
+        while(!que.empty()){
+            ListNode *f=que.top();
+            que.pop();
+            if(f->next) que.push(f->next);
+            
+            tail->next=f;
+            tail=tail->next;
+        }
+        return res->next;
+    }
+};
+矩阵中第k大的数
+using p=pair<int,int>;
+class Solution {
+public:
+    int kthSmallest(vector<vector<int>>& matrix, int k) {
+        int m=matrix[0].size(),n=matrix.size();
+        auto comp=[&](const p &a,const p &b){
+            return matrix[a.first][a.second]>matrix[b.first][b.second];
+        };
+        priority_queue<p,vector<p>,decltype(comp)> que(comp);
+        for(int i=0;i<n;i++) que.emplace(i,0);
+        while(--k){
+            auto [i,j]=que.top();
+            que.pop();
+            if(++j<m) que.emplace(i,j); 
+        }
+        return matrix[que.top().first][que.top().second];
+    }
+};
+第k个最小素数分数
+using pa=pair<int,int>;
+class Solution {
+public:
+    vector<int> kthSmallestPrimeFraction(vector<int>& arr, int k) {
+        int n=arr.size();
+        auto comp=[&](const pair<int,int> &i,const pair<int,int> &j){
+            return arr[i.first]*arr[j.second]>arr[i.second]*arr[j.first];
+        };
+        priority_queue<pa,vector<pa>,decltype(comp)> que(comp);
+        for(int j=1;j<n;j++) que.emplace(0,j);
+        while(--k){
+            auto [i,j]=que.top();
+            que.pop();
+            if(++i<j) que.emplace(i,j);
+        }
+        return {arr[que.top().first],arr[que.top().second]};
+    }
+};
