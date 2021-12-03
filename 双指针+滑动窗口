@@ -1,0 +1,79 @@
+总结 双指针+滑动窗口
+给定两个字符串 s1 和 s2，写一个函数来判断 s2 是否包含 s1 的某个变位词。
+
+换句话说，第一个字符串的排列之一是第二个字符串的 子串 。
+
+ class Solution {
+public:
+    bool checkInclusion(string s1, string s2) {
+        int n = s1.length(), m = s2.length();
+        if (n > m) {
+            return false;
+        }
+        vector<int> hash(26);
+        for(int i=0;i<n;i++) 
+            hash[s1[i]-'a']++;
+        int left=0,right=0;
+        while(right<m){
+            hash[s2[right]-'a']--;
+            if(hash[s2[right]-'a']<0){
+                while(hash[s2[right]-'a']!=0){
+                    hash[s2[left]-'a']++;
+                    left++;
+                }
+            }
+            if(right-left+1==n) return true;
+            right++;
+        }
+        return false;
+    }
+};
+给定两个字符串 s 和 p，找到 s 中所有 p 的 变位词 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
+
+变位词 指字母相同，但排列不同的字符串。
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        int n = s.size(), m = p.size();
+        if (m > n) return {};
+        vector<int> res;
+        vector<int> hash(26);
+        for(int i=0;i<m;i++) 
+            hash[p[i]-'a']++;
+        int left=0,right=0;
+        while(right<n){
+            hash[s[right]-'a']--;
+            if(hash[s[right]-'a']<0){
+                while(hash[s[right]-'a']!=0){
+                    hash[s[left]-'a']++;
+                    left++;
+                }
+            }
+            if(right-left+1==m) res.push_back(left);
+            right++;
+        }
+        return res;;
+    }
+};
+给定一个字符串 s ，请你找出其中不含有重复字符的 最长连续子字符串 的长度。
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int n=s.size();
+        int res=0,left=0,right=0;
+        unordered_set<char> set;
+        for(;right<n;right++){
+            if(set.count(s[right])){
+                res=right-left>res?right-left:res;
+                while(s[left]-s[right]){
+                    set.erase(s[left]);
+                    left++;
+                }
+                left++;
+            }
+            else set.insert(s[right]);
+        }
+        res=right-left>res?right-left:res;
+        return res;
+    }
+};
