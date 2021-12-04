@@ -1,0 +1,50 @@
+给定两个字符串 s 和 t 。返回 s 中包含 t 的所有字符的最短子字符串。如果 s 中不存在符合条件的子字符串，则返回空字符串 "" 。
+
+如果 s 中存在多个符合条件的子字符串，返回任意一个。
+
+ class Solution {
+public:
+    string minWindow(string s, string t) {
+        int n=s.size(),m=t.size();
+        if(m>n) return "";
+        vector<int> hash(60);
+        for(char c:t) hash[c-'A']++;
+        int left=0,differ=0,len=n+1,res=0;
+        for(int right=0;right<n;right++){
+            if(hash[s[right]-'A']>0) differ++;
+            hash[s[right]-'A']--;//特别好的一个用于滑动窗口的技巧 无论什么值都执行操作，满足条件就用一个值记录，调整left指针时以0为标准.
+            if(differ==m){
+                while(hash[s[left]-'A']<0)
+                    hash[s[left++]-'A']++;
+                if(right-left+1<=len) len=right-left+1,res=left;
+            }
+        }
+        return len==n+1?"":s.substr(res,len);
+    }
+};
+给定两个字符串 s 和 p，找到 s 中所有 p 的 变位词 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
+
+变位词 指字母相同，但排列不同的字符串。
+
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        int n = s.size(), m = p.size();
+        if (m > n) return {};
+        vector<int> res;
+        vector<int> hash(26);
+        for(int i=0;i<m;i++) 
+            hash[p[i]-'a']++;
+        int left=0,right=0;
+        while(right<n){
+            hash[s[right]-'a']--;//同上一个小技巧 无论多少都执行操作
+            if(hash[s[right]-'a']<0){当不满足条件时，执行操作.
+                while(hash[s[right]-'a']!=0)
+                    hash[s[left++]-'a']++;
+            }
+            if(right-left+1==m) res.push_back(left);//若为p的变位词，则长度一定等于他
+            right++;
+        }
+        return res;;
+    }
+};
