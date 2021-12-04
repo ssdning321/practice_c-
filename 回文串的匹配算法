@@ -1,0 +1,67 @@
+以下代码都是用于回文子串的匹配 题目目标不一样 但是求解方法本质都一样
+今天的优化版本
+class Solution {
+public: 
+    string longestPalindrome(string s){
+        string t;
+        t+="?#";
+        for(char c:s) t+=c,t+='#';t+='!';
+        int n=t.size();
+        vector<int> dp(n);
+        int pos=0,len=0,resleft=0;
+        for(int i=1;i<n-1;i++){
+            dp[i]=(i<=dp[pos]+pos)?min(dp[2*pos-i],dp[pos]+pos-i):0;
+            while(t[i-dp[i]-1]==t[i+dp[i]+1]) dp[i]++;
+            if(i+dp[i]>pos+dp[pos]) pos=i;
+            if(len<dp[i]){
+                len=dp[i];
+                resleft=i-dp[i];
+            }
+        }
+        s=t.substr(resleft,2*len+1);t.clear();
+        for(char c:s) if(c!='#') t+=c;
+        return t;
+   	}
+};
+今天犯错的版本，忽略了 i以pos为中心的对应j位置的回文长度超出了pos的边界！！！！！！
+class Solution {
+    int n;
+    string s;
+public:
+    int expend_i(int i,int len){
+        int right=i+len,left=i-len;
+        while(left>=0&&right<n&&s[left]==s[right]){
+            left--;
+            right++;
+        }
+        return right-i-1;
+    }
+    int countSubstrings(string str) {
+        s+='.';
+        for(char c:str) s+=c,s+='.';
+        n=s.size();
+        int res=0;
+        vector<int> dp(n);
+        int pos,rightest=-1;
+        for(int i=0;i<n;i++){
+            if(i>rightest){
+                dp[i]=expend_i(i,1);
+                pos=i;
+                rightest=i+dp[i];
+            }
+            else{//对应的回文长度
+                int j=2*pos-i;
+                if(i+dp[j]>rightest) dp[i]=expend_i(i,rightest-i);
+                    //!!!!!!!!!!!!!错在这里了
+                    //忽略了 和i对应位置j 回文长度超越边界。
+                else dp[i]=expend_i(i,dp[j]);
+                if(dp[i]+i>rightest){
+                    rightest=dp[i]+i;
+                    pos=i;
+                }
+            }
+            res+=(dp[i]+1)/2;
+        }
+        return res;
+    }
+};
