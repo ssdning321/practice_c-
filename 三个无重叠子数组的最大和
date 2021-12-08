@@ -1,0 +1,51 @@
+给你一个整数数组 nums 和一个整数 k ，找出三个长度为 k 、互不重叠、且 3 * k 项的和最大的子数组，并返回这三个子数组。
+
+以下标的数组形式返回结果，数组中的每一项分别指示每个子数组的起始位置（下标从 0 开始）。如果有多个结果，返回字典序最小的一个。
+
+解题思路
+滑动窗口 每次遍历包含3*k个数 分三次处理
+sum记录当前遍历到的滑动窗口值
+遍历到目前为止的最大值记录到maxsum中 索引记录到index中
+对于sum[0]即第一个k个数分析 如果是最大的就记录maxsum[0]和index[0]；
+对于sum[1]即第二个k个数分析 如果前一个窗口的最大值maxsum[0]加上当前
+窗口sum[1]大于最大值maxsum[1]，则记录到maxsum[1] 记录maxsum[0]的
+索引到index[1] 记录maxsum[1]的索引到index[2]
+对于sum[2]即第三个k个数分析 如果其前一个窗口的最大值maxsum[1]加上当前遍历
+的sum[2]大于最大值maxsum[2] 则记录maxsum[2] 并且记录到res数组中
+
+代码
+//s代表当前遍历到的值和首位索引的偏移.
+
+
+class Solution {
+public:
+    vector<int> maxSumOfThreeSubarrays(vector<int> &nums, int k) {
+        array<int,3> sum,maxsum,index,s={3*k-1,2*k-1,k-1};
+        vector<int> res(3);
+        int i=s[1],n=nums.size();
+        while(++i<n){
+            sum[0]+=nums[i-s[1]-1];
+            sum[1]+=nums[i-k];
+            sum[2]+=nums[i];
+            if(i>=s[0]){
+                if(sum[0]>maxsum[0]){
+                    maxsum[0]=sum[0];
+                    index[0]=i;
+                }
+                if(sum[1]+maxsum[0]>maxsum[1]){
+                    maxsum[1]=sum[1]+maxsum[0];
+                    index[1]=index[0];
+                    index[2]=i;
+                }
+                if(maxsum[1]+sum[2]>maxsum[2]){
+                    maxsum[2]=maxsum[1]+sum[2];
+                    res={index[1]-s[0],index[2]-s[1],i-s[2]};
+                }
+                sum[0]-=nums[i-s[0]];
+                sum[1]-=nums[i-s[1]];
+                sum[2]-=nums[i-s[2]];
+            }
+        }
+        return res;
+    }
+};
