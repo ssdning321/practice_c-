@@ -1,0 +1,57 @@
+给定一个由 0 和 1 组成的矩阵 matrix ，找出只包含 1 的最大矩形，并返回其面积。
+
+注意：此题 matrix 输入格式为一维 01 字符串数组。
+一行一行的遍历
+每一行每一个的的高度等于 从这一行这一个开始向上遍历
+直到第一个不是0的 然后求直方图的最大面积
+
+直方图的求法是 创建一个栈 初始插入-1 插入数据让他升序排列
+每当遇到更小的 就计算高的面积并且删除 对比下一个top
+计算面积方法是 高度为heights[stack.top()] 并且删除
+宽度是 当前的索引i 减去newtop索引 减去1
+因为在newtop和i之间如果有数据，则他们都一定比top高 -1是不包含newtop和i
+然后插入更小的
+！！最后处理栈剩余元素
+
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+class Solution {
+    stack<int> s;
+    int cols;
+public:
+    int maximalRectangle(vector<string>& matrix) {
+        int rows=matrix.size();
+        if(rows==0) return 0;
+        cols=matrix[0].size();
+        if(cols==0) return 0;
+        s.push(-1);
+        int area=0;
+        vector<int> dp(cols,0);
+        for(string &s:matrix){
+            for(int j=0;j<cols;j++){
+                if(s[j]=='0') dp[j]=0;
+                else dp[j]++;
+            }
+            area=max(area,largestRectangleArea(dp));
+        }
+        return area;
+    }
+    int largestRectangleArea(vector<int> &dp){
+        int area=0;
+        for(int i=0;i<cols;i++){
+            while(s.top()!=-1&&dp[i]<dp[s.top()]){
+                int index=s.top();
+                s.pop();
+                int width=i-s.top()-1;
+                area=max(area,width*dp[index]);
+            }
+            s.push(i);
+        }
+        while(s.top()!=-1){
+            int index=s.top();
+            s.pop();
+            int width=cols-s.top()-1;
+            area=max(area,width*dp[index]);
+        }
+        return area;
+    }
+};
