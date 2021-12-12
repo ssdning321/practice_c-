@@ -1,0 +1,19 @@
+向下取整
+ 找大于key第一个数 找key的左界
+ while(left<right){
+  int mid=(left+right)/2;
+  if(mid==key) return mid;
+  else if(mid>key) left=mid+1;
+  else right=mid;
+ }
+ return right;
+ 
+ 向上取整
+ 找小于key的第一个数 找key右界
+while(left<right){
+  int mid=(left+right+1)/2;
+  if(mid==key) return mid;
+  else if(mid>key) left=mid;
+  else right=mid-1;
+}
+return left;
