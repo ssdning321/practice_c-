@@ -1,0 +1,66 @@
+class Trie{
+public:
+    array<Trie*,2> child;//0 和 1
+    Trie():child({nullptr,nullptr}){}
+
+    int insert(int num){//同时插入和查找
+        int res=0;
+        Trie* node_insert=this;//插入node
+        Trie* node_search=this;//搜索node
+        for(int i=30;i>=0;i--){
+            int j=(num>>i)&1;//从高位到低位
+            if(node_insert->child[j]==nullptr)//插入操作同上几题
+                node_insert->child[j]=new Trie();
+            node_insert=node_insert->child[j];
+            //因为执行的时先插入后搜索 所以不会出现一个node都为空的情况
+            if(node_search->child[!j]){//搜索 优先找1(!j^j=1) 其次再找0
+                node_search=node_search->child[!j];
+                res+=1<<i;
+            }
+            else node_search=node_search->child[j];
+        }
+        return res;
+    }
+};
+class Solution {
+    Trie root;
+public:
+    int findMaximumXOR(vector<int>& nums) {
+        int n=nums.size(),res=0;
+        for(int num:nums)
+            res=max(res,root.insert(num));
+        return res;
+    }
+};
+
+```cpp
+
+class Solution {
+public:
+    int findMaximumXOR(vector<int>& nums) {
+//本质上和上一解法一样 ans代表临时最大的数 res返回值 
+        int res=0,ans=0,x;
+        unordered_set<int> set;
+        for(int i=30;i>=0;i--){
+            ans=(ans<<1)+1;//ans为上一次遍历的最大值
+            //对于这一次 我们期望ans的位后面添加一个1 即2*ans+1
+            for(int n:nums){
+                x=n>>i;//n仅保留i之前的位
+                set.insert(x);
+                //如果(在前i位中)a^b=max 则 max^a=b 在集合中期望可以找到b
+                //和上一个解法一样 高位的1优先级高于低位的1 
+                if(set.count(ans^x)){
+                    res+=1<<i;//如果找到 更新res第i位为1;
+                    break;
+                }
+            }
+            if(!set.count(ans^x)) ans-=1;//没有找到 ans最后一位为0  res第i位也是0 不需要操作
+            set.clear();
+        }
+        return res;
+    }
+};
+
+作者：ning159349
+链接：https://leetcode-cn.com/problems/ms70jA/solution/qian-zhui-sou-suo-shu-cha-ru-xun-zhao-yi-6v18/
+来源：力扣（LeetCode）
